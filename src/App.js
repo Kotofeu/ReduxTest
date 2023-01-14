@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { featchPost } from "./asyncActions/feacthPost";
+import { addPost, deletePost } from "./store/postsReducer";
 
 function App() {
+  const dispatch = useDispatch();
+  const posts = useSelector(state => state.posts.posts)
+  const [name, setName] = useState("")
+  const addPostClick = (e) => {
+    e.preventDefault();
+    dispatch(addPost({id: Date.now(), "title": name}))
+    setName("")
+  }
+  const deletePostClick = (id) => {
+    dispatch(deletePost(id))
+  }
+  const getPostsClick = () => {
+    dispatch(featchPost())
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {posts.map(item =>
+        <h2 key={item.id} onClick = {() => deletePostClick(item.id)}>{item.title}</h2>
+      )}
+      <form onSubmit={addPostClick}>
+        <input type="text"
+          value={name}
+          onChange={e => setName(e.target.value)} />
+        <button type="submit">Добавить</button>
+      </form>
+      <button type="button" onClick={getPostsClick}>Получить</button>
+
     </div>
   );
 }
